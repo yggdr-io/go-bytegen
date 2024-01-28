@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -30,4 +31,33 @@ func TestParseSize(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestWriteRandomBytes(t *testing.T) {
+	t.Run("write 2KB random data", func(t *testing.T) {
+		tmpFile, err := os.CreateTemp("", "test")
+		if err != nil {
+			t.Fatalf("Failed to create temp file: %v", err)
+		}
+		defer t.Cleanup(func() {
+			os.Remove(tmpFile.Name())
+		})
+
+		size := int64(2048)
+		if err := writeRandomBytes(tmpFile, size); err != nil {
+			t.Fatalf("Failed to write random bytes: %v", err)
+		}
+
+		if err := tmpFile.Close(); err != nil {
+			t.Fatalf("Failed to close the file: %v", err)
+		}
+
+		stat, err := os.Stat(tmpFile.Name())
+		if err != nil {
+			t.Fatalf("Failed to stat temp file: %v", err)
+		}
+		if stat.Size() != size {
+			t.Errorf("Expected file size to be %d bytes, got %d bytes", size, stat.Size())
+		}
+	})
 }

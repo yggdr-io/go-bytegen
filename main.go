@@ -13,9 +13,21 @@ func main() {
 	sizeFlag := flag.String("size", "1MB", "Size of the file to generate (e.g., 1MB, 1024KB)")
 	flag.Parse()
 
-	_, err := parseSize(*sizeFlag)
+	size, err := parseSize(*sizeFlag)
 	if err != nil {
 		fmt.Printf("Error parsing size: %v\n", err)
+		return
+	}
+
+	out, err := os.Create("random_bytes.bin")
+	if err != nil {
+		fmt.Printf("Error creating file: %v\n", err)
+		return
+	}
+	defer out.Close()
+
+	if err := writeRandomBytes(out, size); err != nil {
+		fmt.Printf("Error writing random bytes: %v\n", err)
 		return
 	}
 

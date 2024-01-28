@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/rand"
 	"flag"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -39,4 +41,29 @@ func parseSize(s string) (int64, error) {
 	}
 
 	return strconv.ParseInt(s, 10, 64)
+}
+
+func writeRandomBytes(file *os.File, size int64) error {
+	buf := make([]byte, 1024)
+	for size > 0 {
+		bytesToWrite := min(size, int64(len(buf)))
+		_, err := rand.Read(buf[:bytesToWrite])
+		if err != nil {
+			return err
+		}
+		_, err = file.Write(buf[:bytesToWrite])
+		if err != nil {
+			return err
+		}
+		size -= bytesToWrite
+	}
+
+	return nil
+}
+
+func min(a, b int64) int64 {
+	if a < b {
+		return a
+	}
+	return b
 }

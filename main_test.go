@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+// TestParseSize ensures parseSize correctly translates size strings,
+// including units, to byte values.
 func TestParseSize(t *testing.T) {
 	testCases := []struct {
 		s    string // Input size as string

@@ -33,6 +33,27 @@ func TestParseSize(t *testing.T) {
 	}
 }
 
+// TestParseSize_Error tests the function parseSize() with inputs expected
+// to cause errors.
+func TestParseSize_Error(t *testing.T) {
+	testCases := []string{
+		"abc", // unrecognized size
+		"NKB", // non-numeric
+		"1TB", // unsupported size
+	}
+
+	for i, s := range testCases {
+		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
+			t.Parallel()
+
+			_, err := parseSize(s)
+			if err == nil {
+				t.Errorf("parseSize(%s) expected an error, but got none", s)
+			}
+		})
+	}
+}
+
 func TestGen(t *testing.T) {
 	testCases := []int64{
 		2048,

@@ -80,11 +80,11 @@ func parseSize(s string) (int64, error) {
 		}
 
 		s1 := strings.TrimSuffix(s, unit)
-		if size, err := strconv.ParseInt(s1, 10, 64); err == nil {
-			return size * mult, nil
-		} else {
+		size, err := strconv.ParseInt(s1, 10, 64)
+		if err != nil {
 			return 0, err
 		}
+		return size * mult, nil
 	}
 
 	return 0, errors.New("unrecognized size format")

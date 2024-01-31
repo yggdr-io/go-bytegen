@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -34,27 +35,6 @@ func main() {
 	fmt.Println("Random bytes file created successfully")
 }
 
-func parseSize(s string) (int64, error) {
-	units := map[string]int64{
-		"KB": 1024,
-		"MB": 1024 * 1024,
-		"GB": 1024 * 1024 * 1024,
-	}
-
-	s = strings.ToUpper(s)
-	for unit, multiplier := range units {
-		if strings.HasSuffix(s, unit) {
-			size, err := strconv.ParseInt(strings.TrimSuffix(s, unit), 10, 64)
-			if err != nil {
-				return 0, err
-			}
-			return size * multiplier, nil
-		}
-	}
-
-	return strconv.ParseInt(s, 10, 64)
-}
-
 // gen populates file f with n bytes of random data.
 func gen(f *os.File, n int64) error {
 	b := make([]byte, 1024)
@@ -79,4 +59,33 @@ func min(a, b int64) int64 {
 		return a
 	}
 	return b
+}
+
+func parseSize(s string) (int64, error) {
+	cfg := map[string]int64{
+		"KB": 1024,
+		"MB": 1024 * 1024,
+		"GB": 1024 * 1024 * 1024,
+	}
+
+	s = strings.TrimSpace(strings.ToUpper(s))
+
+	if size, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return size, nil
+	}
+
+	for unit, mult := range cfg {
+		if !strings.HasSuffix(s, unit) {
+			continue
+		}
+
+		s1 := strings.TrimSuffix(s, unit)
+		if size, err := strconv.ParseInt(s1, 10, 64); err == nil {
+			return size * mult, nil
+		} else {
+			return 0, err
+		}
+	}
+
+	return 0, errors.New("unrecognized size format")
 }

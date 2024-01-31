@@ -61,6 +61,7 @@ func min(a, b int64) int64 {
 	return b
 }
 
+// parseSize turns size strings into byte values.
 func parseSize(s string) (int64, error) {
 	cfg := map[string]int64{
 		"KB": 1024,

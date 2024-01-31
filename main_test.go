@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -36,19 +37,25 @@ func TestParseSize(t *testing.T) {
 // TestParseSize_Error tests the function parseSize() with inputs expected
 // to cause errors.
 func TestParseSize_Error(t *testing.T) {
-	testCases := []string{
-		"abc", // unrecognized size
-		"NKB", // non-numeric
-		"1TB", // unsupported size
+	testCases := []struct {
+		s    string
+		want string
+	}{
+		{"abc", "unrecognized size format"},
+		{"NKB", "parsing \"N\": invalid syntax"},
+		{"1TB", "unrecognized size format"},
 	}
 
-	for i, s := range testCases {
+	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
 			t.Parallel()
 
-			_, err := parseSize(s)
+			_, err := parseSize(tc.s)
 			if err == nil {
-				t.Errorf("parseSize(%s) expected an error, but got none", s)
+				t.Fatalf("parseSize(%s) expected an error, but got none", tc.s)
+			}
+			if !strings.Contains(err.Error(), tc.want) {
+				t.Errorf("parseSize(%s) expected error message to contain %q, got %q", tc.s, tc.want, err.Error())
 			}
 		})
 	}

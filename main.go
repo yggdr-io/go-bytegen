@@ -59,16 +59,16 @@ func parseSize(s string) (int64, error) {
 func gen(f *os.File, n int64) error {
 	b := make([]byte, 1024)
 	for n > 0 {
-		nc := min(n, int64(len(b)))
-		_, err := rand.Read(b[:nc])
+		ni := min(n, int64(len(b)))
+		_, err := rand.Read(b[:ni])
 		if err != nil {
 			return err
 		}
-		_, err = f.Write(b[:nc])
+		_, err = f.Write(b[:ni])
 		if err != nil {
 			return err
 		}
-		n -= nc
+		n -= ni
 	}
 
 	return nil

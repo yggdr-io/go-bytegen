@@ -74,7 +74,7 @@ func TestGen(t *testing.T) {
 func TestGen_Random(t *testing.T) {
 	n := int64(1024)
 
-	genc := func() ([]byte, error) {
+	genb := func() ([]byte, error) {
 		f, err := os.CreateTemp("", "test")
 		if err != nil {
 			return nil, err
@@ -92,17 +92,17 @@ func TestGen_Random(t *testing.T) {
 		return os.ReadFile(f.Name())
 	}
 
-	c1, err := genc()
+	b1, err := genb()
 	if err != nil {
 		t.Fatalf("Error in first generation/read: %v", err)
 	}
 
-	c2, err := genc()
+	b2, err := genb()
 	if err != nil {
 		t.Fatalf("Error in second generation/read: %v", err)
 	}
 
-	if bytes.Equal(c1, c2) {
+	if bytes.Equal(b1, b2) {
 		t.Errorf("Expected gen to generate different random bytes, but both files are identical")
 	}
 }

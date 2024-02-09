@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"testing"
@@ -67,5 +68,41 @@ func TestGen(t *testing.T) {
 				t.Errorf("Expected file size to be %d bytes, got %d bytes", n, stat.Size())
 			}
 		})
+	}
+}
+
+func TestGen_Random(t *testing.T) {
+	n := int64(1024)
+
+	genc := func() ([]byte, error) {
+		f, err := os.CreateTemp("", "test")
+		if err != nil {
+			return nil, err
+		}
+		defer os.Remove(f.Name())
+
+		if err := gen(f, n); err != nil {
+			return nil, err
+		}
+
+		if err := f.Close(); err != nil {
+			return nil, err
+		}
+
+		return os.ReadFile(f.Name())
+	}
+
+	c1, err := genc()
+	if err != nil {
+		t.Fatalf("Error in first generation/read: %v", err)
+	}
+
+	c2, err := genc()
+	if err != nil {
+		t.Fatalf("Error in second generation/read: %v", err)
+	}
+
+	if bytes.Equal(c1, c2) {
+		t.Errorf("Expected gen to generate different random bytes, but both files are identical")
 	}
 }

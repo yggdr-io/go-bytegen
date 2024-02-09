@@ -55,6 +55,7 @@ func parseSize(s string) (int64, error) {
 	return strconv.ParseInt(s, 10, 64)
 }
 
+// gen populates file f with n bytes of random data.
 func gen(f *os.File, n int64) error {
 	b := make([]byte, 1024)
 	for n > 0 {

@@ -51,7 +51,7 @@ func TestWriteRandomBytes(t *testing.T) {
 				os.Remove(file.Name())
 			})
 
-			if err := writeRandomBytes(file, size); err != nil {
+			if err := gen(file, size); err != nil {
 				t.Fatalf("Failed to write random bytes: %v", err)
 			}
 

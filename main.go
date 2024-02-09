@@ -26,7 +26,7 @@ func main() {
 	}
 	defer out.Close()
 
-	if err := writeRandomBytes(out, size); err != nil {
+	if err := gen(out, size); err != nil {
 		fmt.Printf("Error writing random bytes: %v\n", err)
 		return
 	}
@@ -55,19 +55,19 @@ func parseSize(s string) (int64, error) {
 	return strconv.ParseInt(s, 10, 64)
 }
 
-func writeRandomBytes(file *os.File, size int64) error {
-	buf := make([]byte, 1024)
-	for size > 0 {
-		bytesToWrite := min(size, int64(len(buf)))
-		_, err := rand.Read(buf[:bytesToWrite])
+func gen(f *os.File, n int64) error {
+	b := make([]byte, 1024)
+	for n > 0 {
+		nc := min(n, int64(len(b)))
+		_, err := rand.Read(b[:nc])
 		if err != nil {
 			return err
 		}
-		_, err = file.Write(buf[:bytesToWrite])
+		_, err = f.Write(b[:nc])
 		if err != nil {
 			return err
 		}
-		size -= bytesToWrite
+		n -= nc
 	}
 
 	return nil

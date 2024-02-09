@@ -32,39 +32,39 @@ func TestParseSize(t *testing.T) {
 	}
 }
 
-func TestWriteRandomBytes(t *testing.T) {
+func TestGen(t *testing.T) {
 	testCases := []int64{
 		2048,
 		1536,
 		0,
 	}
 
-	for i, size := range testCases {
+	for i, n := range testCases {
 		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
 			t.Parallel()
 
-			file, err := os.CreateTemp("", "test")
+			f, err := os.CreateTemp("", "test")
 			if err != nil {
 				t.Fatalf("Failed to create temp file: %v", err)
 			}
 			defer t.Cleanup(func() {
-				os.Remove(file.Name())
+				os.Remove(f.Name())
 			})
 
-			if err := gen(file, size); err != nil {
+			if err := gen(f, n); err != nil {
 				t.Fatalf("Failed to write random bytes: %v", err)
 			}
 
-			if err := file.Close(); err != nil {
-				t.Fatalf("Failed to close the file: %v", err)
+			if err := f.Close(); err != nil {
+				t.Fatalf("Failed to close the temp file: %v", err)
 			}
 
-			stat, err := os.Stat(file.Name())
+			stat, err := os.Stat(f.Name())
 			if err != nil {
 				t.Fatalf("Failed to stat temp file: %v", err)
 			}
-			if stat.Size() != size {
-				t.Errorf("Expected file size to be %d bytes, got %d bytes", size, stat.Size())
+			if stat.Size() != n {
+				t.Errorf("Expected file size to be %d bytes, got %d bytes", n, stat.Size())
 			}
 		})
 	}

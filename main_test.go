@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -27,6 +28,45 @@ func TestParseSize(t *testing.T) {
 			}
 			if got != tc.want {
 				t.Errorf("Expected %d bytes for input '%s', but got %d bytes", tc.want, tc.s, got)
+			}
+		})
+	}
+}
+
+func TestWriteRandomBytes(t *testing.T) {
+	testCases := []int64{
+		2048,
+		1536,
+		0,
+	}
+
+	for i, size := range testCases {
+		size := size
+		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
+			t.Parallel()
+
+			file, err := os.CreateTemp("", "test")
+			if err != nil {
+				t.Fatalf("Failed to create temp file: %v", err)
+			}
+			defer t.Cleanup(func() {
+				os.Remove(file.Name())
+			})
+
+			if err := writeRandomBytes(file, size); err != nil {
+				t.Fatalf("Failed to write random bytes: %v", err)
+			}
+
+			if err := file.Close(); err != nil {
+				t.Fatalf("Failed to close the file: %v", err)
+			}
+
+			stat, err := os.Stat(file.Name())
+			if err != nil {
+				t.Fatalf("Failed to stat temp file: %v", err)
+			}
+			if stat.Size() != size {
+				t.Errorf("Expected file size to be %d bytes, got %d bytes", size, stat.Size())
 			}
 		})
 	}

@@ -18,7 +18,6 @@ func TestParseSize(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		tc := tc
 		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
 			t.Parallel()
 
@@ -27,7 +26,7 @@ func TestParseSize(t *testing.T) {
 				t.Fatalf("Got unexpected error: %v", err)
 			}
 			if got != tc.want {
-				t.Errorf("Expected %d bytes for input '%s', but got %d bytes", tc.want, tc.s, got)
+				t.Errorf("Expected %d bytes for input %q, but got %d bytes", tc.want, tc.s, got)
 			}
 		})
 	}
@@ -41,7 +40,6 @@ func TestWriteRandomBytes(t *testing.T) {
 	}
 
 	for i, size := range testCases {
-		size := size
 		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
 			t.Parallel()
 

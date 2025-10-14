@@ -12,24 +12,25 @@ import (
 
 func main() {
 	sizeFlag := flag.String("size", "1MB", "Size of the file to generate (e.g., 1MB, 1024KB)")
+	outFlag := flag.String("o", "random_bytes.bin", "Output file path")
 	flag.Parse()
 
 	size, err := parseSize(*sizeFlag)
 	if err != nil {
-		fmt.Printf("Error parsing size: %v\n", err)
-		return
+		fmt.Fprintf(os.Stderr, "parse size %q: %v\n", *sizeFlag, err)
+		os.Exit(1)
 	}
 
-	out, err := os.Create("random_bytes.bin")
+	out, err := os.Create(*outFlag)
 	if err != nil {
-		fmt.Printf("Error creating file: %v\n", err)
-		return
+		fmt.Fprintf(os.Stderr, "create %q: %v\n", *outFlag, err)
+		os.Exit(1)
 	}
 	defer out.Close()
 
 	if err := gen(out, size); err != nil {
-		fmt.Printf("Error writing random bytes: %v\n", err)
-		return
+		fmt.Fprintf(os.Stderr, "write random bytes: %v\n", err)
+		os.Exit(1)
 	}
 
 	fmt.Println("Random bytes file created successfully")

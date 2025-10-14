@@ -12,6 +12,7 @@ import (
 
 func main() {
 	sizeFlag := flag.String("size", "1MB", "Size of the file to generate (e.g., 1MB, 1024KB)")
+	outFlag := flag.String("o", "random_bytes.bin", "Output file path")
 	flag.Parse()
 
 	size, err := parseSize(*sizeFlag)
@@ -20,7 +21,7 @@ func main() {
 		return
 	}
 
-	out, err := os.Create("random_bytes.bin")
+	out, err := os.Create(*outFlag)
 	if err != nil {
 		fmt.Printf("Error creating file: %v\n", err)
 		return

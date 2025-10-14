@@ -18,19 +18,19 @@ func main() {
 	size, err := parseSize(*sizeFlag)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "parse size %q: %v\n", *sizeFlag, err)
-		return
+		os.Exit(1)
 	}
 
 	out, err := os.Create(*outFlag)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "create %q: %v\n", *outFlag, err)
-		return
+		os.Exit(1)
 	}
 	defer out.Close()
 
 	if err := gen(out, size); err != nil {
 		fmt.Fprintf(os.Stderr, "write random bytes: %v\n", err)
-		return
+		os.Exit(1)
 	}
 
 	fmt.Println("Random bytes file created successfully")

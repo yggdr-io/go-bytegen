@@ -39,7 +39,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Random bytes file created successfully")
+	fmt.Printf("Wrote %d random bytes to %q\n", size, *outFlag)
 }
 
 // writeRandom writes exactly n random bytes to w.

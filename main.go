@@ -27,7 +27,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "create %q: %v\n", *outFlag, err)
 		os.Exit(1)
 	}
-	defer out.Close()
+	defer func() {
+		if cerr := out.Close(); cerr != nil {
+			fmt.Fprintf(os.Stderr, "close %q: %v\n", *outFlag, cerr)
+			os.Exit(1)
+		}
+	}()
 
 	if err := writeRandom(out, size); err != nil {
 		fmt.Fprintf(os.Stderr, "write random bytes: %v\n", err)

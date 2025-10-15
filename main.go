@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -28,7 +29,7 @@ func main() {
 	}
 	defer out.Close()
 
-	if err := gen(out, size); err != nil {
+	if err := writeRandom(out, size); err != nil {
 		fmt.Fprintf(os.Stderr, "write random bytes: %v\n", err)
 		os.Exit(1)
 	}
@@ -36,30 +37,10 @@ func main() {
 	fmt.Println("Random bytes file created successfully")
 }
 
-// gen populates file f with n bytes of random data.
-func gen(f *os.File, n int64) error {
-	b := make([]byte, 1024)
-	for n > 0 {
-		ni := min(n, int64(len(b)))
-		_, err := rand.Read(b[:ni])
-		if err != nil {
-			return err
-		}
-		_, err = f.Write(b[:ni])
-		if err != nil {
-			return err
-		}
-		n -= ni
-	}
-
-	return nil
-}
-
-func min(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
+// writeRandom writes exactly n random bytes to w.
+func writeRandom(w io.Writer, n int64) error {
+	_, err := io.CopyN(w, rand.Reader, n)
+	return err
 }
 
 // parseSize turns size strings into byte values.

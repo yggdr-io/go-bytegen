@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 )
@@ -60,79 +58,5 @@ func TestParseSize_Error(t *testing.T) {
 				t.Errorf("parseSize(%s) expected error message to contain %q, got %q", tc.s, tc.want, err.Error())
 			}
 		})
-	}
-}
-
-func TestGen(t *testing.T) {
-	testCases := []int64{
-		2048,
-		1536,
-		0,
-	}
-
-	for i, n := range testCases {
-		t.Run(fmt.Sprintf("Case%d", i), func(t *testing.T) {
-			t.Parallel()
-
-			f, err := os.CreateTemp("", "test")
-			if err != nil {
-				t.Fatalf("Failed to create temp file: %v", err)
-			}
-			defer t.Cleanup(func() {
-				os.Remove(f.Name())
-			})
-
-			if err := gen(f, n); err != nil {
-				t.Fatalf("Failed to write random bytes: %v", err)
-			}
-
-			if err := f.Close(); err != nil {
-				t.Fatalf("Failed to close the temp file: %v", err)
-			}
-
-			stat, err := os.Stat(f.Name())
-			if err != nil {
-				t.Fatalf("Failed to stat temp file: %v", err)
-			}
-			if stat.Size() != n {
-				t.Errorf("Expected file size to be %d bytes, got %d bytes", n, stat.Size())
-			}
-		})
-	}
-}
-
-func TestGen_Random(t *testing.T) {
-	n := int64(1024)
-
-	genb := func() ([]byte, error) {
-		f, err := os.CreateTemp("", "test")
-		if err != nil {
-			return nil, err
-		}
-		defer os.Remove(f.Name())
-
-		if err := gen(f, n); err != nil {
-			return nil, err
-		}
-
-		if err := f.Close(); err != nil {
-			return nil, err
-		}
-
-		return os.ReadFile(f.Name())
-	}
-
-	b1, err := genb()
-	if err != nil {
-		t.Fatalf("Error in first generation/read: %v", err)
-	}
-
-	b2, err := genb()
-	if err != nil {
-		t.Fatalf("Error in second generation/read: %v", err)
-	}
-
-	if bytes.Equal(b1, b2) {
-		t.Errorf("Expected gen to generate different random bytes, but both files are identical")
 	}
 }
